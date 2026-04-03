@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cluiche na hInscne</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <header style="display: flex; justify-content: flex-end; gap: 0.5rem; padding:1.5rem;">
+        <button id="set-ga">Gaeilge</button>
+        <button id="set-en">English</button>
+    </header>
+    <main style="font-family: sans-serif; max-width: 560px; margin: auto; padding: 1.5rem; flex: 1;">
+        <h1>Cluiche na hInscne</h1>
+
+        <section id="game-area" style="border: 1px solid #cccccc; padding: 1rem; border-radius: 8px; min-height: 200px;">
+            <p><strong><span data-i18n="word_label">Focal:</span></strong> <span id="word"></span></p>
+            <div style="display: flex; gap: 0.5rem; margin: 0.75rem 0;">
+                <button id="btn-masc" style="flex: 1; padding: 0.6rem; min-width: 140px;" data-i18n="masculine" disabled>Firinscneach</button>
+                <button id="btn-fem" style="flex: 1; padding: 0.6rem; min-width: 140px;" data-i18n="feminine" disabled>Baininscneach</button>
+            </div>
+            <p id="feedback" style="min-height: 3em;"></p>
+            <button id="btn-next" style="padding: 0.5rem 0.8rem; display: none; min-width: 180px;" data-i18n="next_word">An chéad fhocal eile</button>
+        </section>
+
+        <section id="stats" style="margin-top: 1rem;">
+            <h2 data-i18n="statistics">Staidreamh</h2>
+            <table id="stats-table" style="width:100%; border-collapse: collapse; text-align: left; table-layout: fixed;">
+                <thead>
+                    <tr>
+                        <th style="border-bottom: 1px solid lightgrey; padding: 0.4rem; width: 50%;" data-i18n="category">Catagóir</th>
+                        <th style="border-bottom: 1px solid lightgrey; padding: 0.4rem; width: 25%;" data-i18n="attempts">Iarrachtaí</th>
+                        <th style="border-bottom: 1px solid lightgrey; padding: 0.4rem; width: 25%;" data-i18n="percent_correct">Céatadán atá ceart</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 0.4rem;" data-i18n="overall">Iomlán</td>
+                        <td style="padding: 0.4rem;"><span id="total-attempts">0</span></td>
+                        <td style="padding: 0.4rem;"><span id="pct-correct">0%</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.4rem;" data-i18n="masculine">Firinscneach</td>
+                        <td style="padding: 0.4rem;"><span id="attempts-masc">0</span></td>
+                        <td style="padding: 0.4rem;"><span id="pct-masc">N/A</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.4rem;" data-i18n="feminine">Baininscneach</td>
+                        <td style="padding: 0.4rem;"><span id="attempts-fem">0</span></td>
+                        <td style="padding: 0.4rem;"><span id="pct-fem">N/A</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer style="text-align: center; padding: 1rem; font-size: 0.9rem; color: darkgrey; height: 10vh; display: flex; align-items: center; justify-content: center;">
+        <p>
+            <span data-i18n="by">Ó</span> <a href="https://github.com/SeanMcGoff" target="_blank">Sean McGoff</a>
+        </p>
+    </footer>
+
+    <script src="localisation.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
