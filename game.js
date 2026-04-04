@@ -1,5 +1,3 @@
-const CSV_PATH = "data/nouns.csv";
-
 const elements = {
   word: document.getElementById("word"),
   feedback: document.getElementById("feedback"),
@@ -16,6 +14,7 @@ const elements = {
 
 const gameState = {
   nouns: [],
+  bothGenders: [],
   current: null,
   totalAttempts: 0,
   correctTotal: 0,
@@ -25,22 +24,24 @@ const gameState = {
   correctFem: 0,
 };
 
-function parseCsv(text) {
+function parseCsv(text, columns = null) {
   const rows = text
     .split(/\r?\n/)
     .map((line) => line.trim())
-    .filter((line) => line.length);
-  const nouns = [];
-  for (const row of rows) {
-    const parts = row.split(",");
-    if (parts.length < 2) continue;
-    const noun = parts[0].trim();
-    const gender = parts[1].trim().toLowerCase();
-    if (!noun || !gender) continue;
-    if (gender !== "masc" && gender !== "fem") continue;
-    nouns.push({ noun, gender });
-  }
-  return nouns;
+    .filter((line) => line.length)
+    .map((row) => row.split(",").map((cell) => cell.trim()));
+
+  if (!columns) return rows;
+
+  return rows
+    .filter((row) => row.length >= columns.length && row[0])
+    .map((row) => {
+      const obj = {};
+      columns.forEach((colName, index) => {
+        obj[colName] = row[index];
+      });
+      return obj;
+    });
 }
 
 function chooseRandomNoun() {
@@ -109,7 +110,17 @@ function setFeedback(correct) {
 function answer(genderGuess) {
   if (!gameState.current) return;
   gameState.totalAttempts += 1;
-  if (gameState.current.gender === "masc") {
+
+  if (gameState.bothGenders.some((item) => item.noun === gameState.current.noun)) {
+    // This noun can be both masculine and feminine given the definition,
+    // so I'm counting it as correct regardless of the guess
+    gameState.attemptsMasc += 1;
+    gameState.attemptsFem += 1;
+    gameState.correctTotal += 1;
+    gameState.correctMasc += 1;
+    gameState.correctFem += 1;
+    setFeedback(true);
+  } else if (gameState.current.gender === "masc") {
     gameState.attemptsMasc += 1;
     if (genderGuess === "masc") {
       gameState.correctTotal += 1;
@@ -159,23 +170,45 @@ elements.word.addEventListener("click", () => {
 
 document.addEventListener("keydown", onKeyDown);
 
-function loadAndStart() {
-  fetch(CSV_PATH)
+function loadCSV(path, columns = null) {
+  return fetch(path)
     .then((response) => {
-      if (!response.ok) throw new Error(`Failed to load ${CSV_PATH}`);
+      if (!response.ok) throw new Error(`Failed to load ${path}`);
       return response.text();
     })
     .then((text) => {
-      gameState.nouns = parseCsv(text);
-      gameState.current = chooseRandomNoun();
-      showCurrentWord();
-      refreshStats();
+      return parseCsv(text, columns);
     })
     .catch((error) => {
       elements.word.textContent = "";
       elements.feedback.textContent = error.message;
       elements.feedback.style.color = "red";
+      return [];
     });
+}
+
+function loadAndStart() {
+  const BOTH_GENDERS_CSV_PATH = "data/both_genders.csv";
+  const NOUNS_CSV_PATH = "data/nouns.csv";
+
+  Promise.all([
+    loadCSV(NOUNS_CSV_PATH, ["noun", "gender"]),
+    loadCSV(BOTH_GENDERS_CSV_PATH, ["noun"]),
+  ]).then(([nouns, bothGenders]) => {
+    gameState.nouns = nouns;
+    gameState.bothGenders = bothGenders;
+
+    const allLoaded = [gameState.nouns, gameState.bothGenders].every(
+      (arr) => arr.length > 0
+    );
+    if (allLoaded) {
+      gameState.current = chooseRandomNoun();
+      showCurrentWord();
+      refreshStats();
+    } else {
+      console.error("Failed to load necessary data.");
+    }
+  });
 }
 
 window.addEventListener("languageChanged", () => {
