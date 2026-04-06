@@ -1,6 +1,7 @@
 # Cluiche na hInscne
-
 This is a little game I made to help learn the genders of nouns in Irish. 
+
+[GH Pages Deployment](https://seanmcgoff.github.io/cluiche-na-hinscne/)
 
 ## Roadmap
 
