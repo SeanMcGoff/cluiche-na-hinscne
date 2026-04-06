@@ -4,6 +4,7 @@ const elements = {
   btnMasc: document.getElementById("btn-masc"),
   btnFem: document.getElementById("btn-fem"),
   btnNext: document.getElementById("btn-next"),
+  btnDef: document.getElementById("btn-def"),
   totalAttempts: document.getElementById("total-attempts"),
   pctCorrect: document.getElementById("pct-correct"),
   attemptsMasc: document.getElementById("attempts-masc"),
@@ -76,13 +77,10 @@ function showCurrentWord() {
     return;
   }
   elements.word.textContent = gameState.current.noun;
-  elements.word.style.color = "";
-  elements.word.style.textDecoration = "";
-  elements.word.style.cursor = "default";
-  elements.word.removeAttribute("data-url");
   elements.btnMasc.disabled = false;
   elements.btnFem.disabled = false;
   elements.btnNext.style.display = "none";
+  elements.btnDef.style.display = "none";
   elements.feedback.textContent = "";
 }
 
@@ -100,10 +98,8 @@ function setFeedback(correct) {
   if (gameState.current && gameState.current.noun) {
     const slug = encodeURIComponent(gameState.current.noun);
     const url = `https://www.teanglann.ie/en/fgb/${slug}`;
-    elements.word.style.color = "blue";
-    elements.word.style.textDecoration = "underline";
-    elements.word.style.cursor = "pointer";
-    elements.word.setAttribute("data-url", url);
+    elements.btnDef.setAttribute("data-url", url);
+    elements.btnDef.style.display = "inline-block";
   }
 }
 
@@ -160,13 +156,6 @@ function onKeyDown(event) {
     return;
   }
 }
-
-elements.word.addEventListener("click", () => {
-  const targetUrl = elements.word.getAttribute("data-url");
-  if (targetUrl) {
-    window.open(targetUrl, "_blank");
-  }
-});
 
 document.addEventListener("keydown", onKeyDown);
 
@@ -229,6 +218,12 @@ elements.btnFem.addEventListener("click", () => answer("fem"));
 elements.btnNext.addEventListener("click", () => {
   gameState.current = chooseRandomNoun();
   showCurrentWord();
+});
+elements.btnDef.addEventListener("click", () => {
+  const url = elements.btnDef.getAttribute("data-url");
+  if (url) {
+    window.open(url, "_blank");
+  }
 });
 
 document.addEventListener("DOMContentLoaded", loadAndStart);
